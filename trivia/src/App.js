@@ -66,19 +66,21 @@ function CatQuestion(selectedCat) {
 
   return (
     <div className='question'>
+      
       {que.map((q) =>
-      (
+
+        (
       <div>
-        <h1 key={selectedCat}>{q[0]}</h1>
-      <ul>
-      <li>{q[1][0]}</li>
-      <li>{q[1][1]}</li>
-      <li>{q[1][2]}</li>
-      <li>{q[2]}</li>
+        <h1 key={selectedCat}>{q[0].replace('&quot;','"').replace('&quot;','"')}</h1>
+      <ul className='questions'>
+      <li className='category'>{q[1][0]}</li>
+      <li className='category'>{q[1][1]}</li>
+      <li className='category'>{q[1][2]}</li>
+      <li className='category'>{q[2]}</li>
       </ul>
       </div>)
    
-  )}
+        )}
   </div>
   )
 
