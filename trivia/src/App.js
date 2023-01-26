@@ -1,13 +1,12 @@
 import './App.css';
 import { useState, useEffect } from 'react'
 import axios from 'axios';
+import he, { decode } from "he"
+import shuffle from 'lodash/shuffle'
 
 
 
 function App() {
-
-
- 
   return (
     <div className="App">
     <Category/>
@@ -28,62 +27,58 @@ function Category() {
   },[])
 
   const [selectedCat, setSelectedCat] = useState("")
-  
   if (selectedCat){
-
-    console.log(selectedCat)
-  
-    return <CatQuestion />
+    return <CatQuestion selectedCat={selectedCat}/>
   }
 
   return (
     <div className='category-list'>
       <ul className='wrapper'>
-       
         {categories.map((cat) => (<li onClick ={() =>setSelectedCat(cat.id)}className='category' key={cat.id}>{cat.name}</li>
         ))}
-         
       </ul>
-      
-
     </div>
   )
 }
 
 
-function CatQuestion(selectedCat) {
+function CatQuestion(props) {
   const [que, setQuestion] = useState([])
-  console.log(`cat id is ${selectedCat}`)
+  const [ans, setAnswer] = useState('')
   useEffect(() => {
     axios
-    .get(`https://opentdb.com/api.php?amount=1&category=9`)
-    .then((response) =>{setQuestion(response.data.results.map(obj => [obj.question, obj.incorrect_answers, obj.correct_answer]))
-    })
+    .get(`https://opentdb.com/api.php?amount=1&category=${props.selectedCat}`)
+    .then((response) => {
+      setQuestion(response.data.results.map((obj) => ({
+        question: he.decode(obj.question),
+        correctAnswer: he.decode(obj.correct_answer),
+        answers: shuffle([
+          obj.correct_answer,
+          ...obj.incorrect_answers
+        ]),
+      }))
+    )})
     
-  },[selectedCat])
-
-  
+  },[props.selectedCat])
 
   return (
     <div className='question'>
-      
-      {que.map((q) =>
-
-        (
-      <div>
-        <h1 key={selectedCat}>{q[0].replace('&quot;','"').replace('&quot;','"')}</h1>
-      <ul className='questions'>
-      <li className='category'>{q[1][0]}</li>
-      <li className='category'>{q[1][1]}</li>
-      <li className='category'>{q[1][2]}</li>
-      <li className='category'>{q[2]}</li>
-      </ul>
-      </div>)
-   
-        )}
-  </div>
+      {que && que.map((q) =>(
+        <div>
+          <h1 key={props.selectedCat}>
+            {q.question}
+          </h1>
+          <ul className='questions'>
+            
+            {q.answers.map(a => (
+              <li onClick ={() =>(setAnswer(he.decode(a)))} className='category'>{he.decode(a)}</li> 
+              
+            ))}
+          </ul>
+        </div>
+        ))}
+    </div>
   )
-
-      }
+}
 
 export default App;
