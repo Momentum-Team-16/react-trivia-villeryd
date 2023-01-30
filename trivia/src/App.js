@@ -32,6 +32,7 @@ function Category() {
     return (
       <CatQuestion
         selectedCat={selectedCat}
+        setSelectedCat={setSelectedCat}
         changeScore={updateScore}
         score={score}
       />
@@ -55,7 +56,7 @@ function Category() {
   );
 }
 
-function CatQuestion({ selectedCat, changeScore, score }) {
+function CatQuestion({ selectedCat, setSelectedCat, changeScore, score }) {
   const [que, setQuestion] = useState([]);
   const [index, setIndex] = useState(0);
 
@@ -72,7 +73,7 @@ function CatQuestion({ selectedCat, changeScore, score }) {
         );
       });
   }, [selectedCat]);
-  console.log(que);
+
   return (
     que.length > 0 && (
       <QuestionList
@@ -81,12 +82,20 @@ function CatQuestion({ selectedCat, changeScore, score }) {
         setIndex={setIndex}
         changeScore={changeScore}
         score={score}
+        setSelectedCat={setSelectedCat}
       />
     )
   );
 }
 
-function QuestionList({ changeScore, question, index, setIndex, score }) {
+function QuestionList({
+  changeScore,
+  question,
+  index,
+  setIndex,
+  score,
+  setSelectedCat,
+}) {
   const [ans, setAnswer] = useState("");
 
   function handleClick() {
@@ -97,9 +106,10 @@ function QuestionList({ changeScore, question, index, setIndex, score }) {
     setIndex(index + 1);
   }
 
-  if (index > question.length) {
-    return <EndGame question={question} index={index} score={score} />;
+  if (question && index > question.length - 1) {
+    return <EndGame score={score} setSelectedCat={setSelectedCat} />;
   }
+
   return (
     <div className='question'>
       <div>
@@ -117,11 +127,12 @@ function QuestionList({ changeScore, question, index, setIndex, score }) {
   );
 }
 
-function EndGame({ changeScore, question, index, setIndex, score }) {
+function EndGame({ score, setSelectedCat }) {
   return (
     <div>
       <h1>Congrats you made it to the end!</h1>
       <p>score = {score}</p>
+      <button onClick={() => setSelectedCat(null)}>Play again</button>
     </div>
   );
 }
