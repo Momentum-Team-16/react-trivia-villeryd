@@ -116,9 +116,13 @@ function QuestionList({
         <h1 key={index}>{question[index].question}</h1>
         <ul className='questions'>
           {question[index].answers.map((a) => (
-            <li onClick={() => setAnswer(he.decode(a))} className='category'>
-              {he.decode(a)}
-            </li>
+            <AnswerChoice answer={a} setAnswer={setAnswer} />
+            // <li
+            //   onClick={() => clickAnswer(he.decode(a))}
+            //   className={` ${isActive ? "category" : "bold"}`}
+            // >
+            //   {he.decode(a)}
+            // </li>
           ))}
         </ul>
         <button onClick={() => handleClick()}>submit</button>
@@ -126,7 +130,23 @@ function QuestionList({
     </div>
   );
 }
-
+function AnswerChoice({ answer, setAnswer }) {
+  const [isActive, setActive] = useState(false);
+  function clickAnswer(a) {
+    setAnswer(a);
+    setActive(!isActive);
+  }
+  return (
+    <>
+      <li
+        onClick={() => clickAnswer(he.decode(answer))}
+        className={` ${isActive ? "bold" : "category"}`}
+      >
+        {he.decode(answer)}
+      </li>
+    </>
+  );
+}
 function EndGame({ score, setSelectedCat }) {
   return (
     <div>
